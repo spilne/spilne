@@ -1,5 +1,5 @@
 import sbt.Def._
-import sbt.{Def, settingKey}
+import sbt.{settingKey, Def}
 
 object BuildKeys {
 

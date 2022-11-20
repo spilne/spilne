@@ -6,10 +6,10 @@ import Boilerplate._
 
 lazy val aggregatorIDs = Seq("core")
 
-addCommandAlias("ci-jvm",     ";" + aggregatorIDs.map(id => s"${id}/clean ;${id}/Test/compile ;${id}/test").mkString(";"))
+addCommandAlias("ci-jvm", ";" + aggregatorIDs.map(id => s"${id}/clean ;${id}/Test/compile ;${id}/test").mkString(";"))
 addCommandAlias("ci-package", ";scalafmtCheckAll ;package")
-addCommandAlias("ci",         ";project root ;reload ;+scalafmtCheckAll ;+ci-jvm ;+package")
-addCommandAlias("release",    ";+clean ;ci-release")
+addCommandAlias("ci", ";project root ;reload ;+scalafmtCheckAll ;+ci-jvm ;+package")
+addCommandAlias("release", ";+clean ;ci-release")
 
 // ---------------------------------------------------------------------------
 // Dependencies
@@ -23,49 +23,45 @@ val KindProjectorVersion = "0.13.2"
 val BetterMonadicForVersion = "0.3.1"
 val GitHub4sVersion = "0.29.1"
 
-def defaultPlugins: Project ⇒ Project = pr => {
-  val withCoverage = sys.env.getOrElse("SBT_PROFILE", "") match {
-    case "coverage" => pr
-    case _ => pr.disablePlugins(scoverage.ScoverageSbtPlugin)
+def defaultPlugins: Project ⇒ Project =
+  pr => {
+    val withCoverage = sys.env.getOrElse("SBT_PROFILE", "") match {
+      case "coverage" => pr
+      case _ => pr.disablePlugins(scoverage.ScoverageSbtPlugin)
+    }
+
+    withCoverage
+      .enablePlugins(GitBranchPrompt)
   }
 
-  withCoverage
-    .enablePlugins(GitBranchPrompt)
-}
-
 lazy val sharedSettings = Seq(
-  projectTitle := "dobirne",
-  projectWebsiteRootURL := "https://dobirne.github.io/",
-  projectWebsiteBasePath := "/dobirne/",
-  githubOwnerID := "dobirne",
+  projectTitle               := "dobirne",
+  projectWebsiteRootURL      := "https://dobirne.github.io/",
+  projectWebsiteBasePath     := "/dobirne/",
+  githubOwnerID              := "dobirne",
   githubRelativeRepositoryID := "dobirne",
-
-  organization := "io.github.dobirne",
-  scalaVersion := "2.13.6",
-  crossScalaVersions := Seq("2.12.14", "2.13.6", "3.0.2"),
-
+  organization               := "io.github.dobirne",
+  scalaVersion               := "2.13.6",
+  crossScalaVersions         := Seq("2.12.14", "2.13.6", "3.0.2"),
   // Turning off fatal warnings for doc generation
   Compile / doc / scalacOptions ~= filterConsoleScalacOptions,
-
   // Turning off fatal warnings and certain annoyances during testing
-  Test / scalacOptions ~= (_ filterNot (Set( 
+  Test / scalacOptions ~= (_ filterNot (Set(
     "-Xfatal-warnings",
     "-Werror",
     "-Ywarn-value-discard",
-    "-Wvalue-discard",
+    "-Wvalue-discard"
   ))),
-
   // Compiler plugins that aren't necessarily compatible with Scala 3
   libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, _)) =>
       Seq(
         compilerPlugin("com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion),
-        compilerPlugin("org.typelevel" % "kind-projector" % KindProjectorVersion cross CrossVersion.full),
+        compilerPlugin("org.typelevel"                      % "kind-projector" % KindProjectorVersion cross CrossVersion.full)
       )
     case _ =>
       Seq.empty
   }),
-
   // ScalaDoc settings
   autoAPIMappings := true,
   scalacOptions ++= Seq(
@@ -74,43 +70,35 @@ lazy val sharedSettings = Seq(
     // absolute path of the source file, the absolute path of that file
     // will be put into the FILE_SOURCE variable, which is
     // definitely not what we want.
-    "-sourcepath", file(".").getAbsolutePath.replaceAll("[.]$", "")
+    "-sourcepath",
+    file(".").getAbsolutePath.replaceAll("[.]$", "")
   ),
-
   // https://github.com/sbt/sbt/issues/2654
   incOptions := incOptions.value.withLogRecompileOnMacro(false),
-
   // ---------------------------------------------------------------------------
   // Options for testing
-
-  Test / logBuffered := false,
+  Test / logBuffered            := false,
   IntegrationTest / logBuffered := false,
-
   // ---------------------------------------------------------------------------
   // Options meant for publishing on Maven Central
-
   Test / publishArtifact := false,
-  pomIncludeRepository := { _ => false }, // removes optional dependencies
-
-  licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-  homepage := Some(url(projectWebsiteFullURL.value)),
-
+  pomIncludeRepository   := { _ => false }, // removes optional dependencies
+  licenses               := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+  homepage               := Some(url(projectWebsiteFullURL.value)),
   scmInfo := Some(
     ScmInfo(
       url(s"https://github.com/${githubFullRepositoryID.value}"),
       s"scm:git@github.com:${githubFullRepositoryID.value}.git"
     )),
-
   developers := List(
     Developer(
-      id="dobirne",
-      name="dobirne",
-      email="dobirne",
-      url=url("https://dobirne.github.io")
+      id = "dobirne",
+      name = "dobirne",
+      email = "dobirne",
+      url = url("https://dobirne.github.io")
     )),
-
   // -- Settings meant for deployment on oss.sonatype.org
-  sonatypeProfileName := organization.value,
+  sonatypeProfileName := organization.value
 )
 
 /**
@@ -120,12 +108,14 @@ def defaultProjectConfiguration(pr: Project) = {
   pr.configure(defaultPlugins)
     .settings(sharedSettings)
     .settings(crossVersionSharedSources)
-    .settings(filterOutMultipleDependenciesFromGeneratedPomXml(
-      "groupId" -> "org.scoverage".r :: Nil,
-    ))
+    .settings(
+      filterOutMultipleDependenciesFromGeneratedPomXml(
+        "groupId" -> "org.scoverage".r :: Nil
+      ))
 }
 
-lazy val root = project.in(file("."))
+lazy val root = project
+  .in(file("."))
   .aggregate(core)
   .configure(defaultPlugins)
   .settings(sharedSettings)
@@ -139,7 +129,7 @@ lazy val root = project.in(file("."))
     Global / excludeLintKeys ++= Set(
       IntegrationTest / logBuffered,
       coverageExcludedFiles,
-      githubRelativeRepositoryID,
+      githubRelativeRepositoryID
     )
   )
 
@@ -149,13 +139,13 @@ lazy val core = project
   .settings(
     name := "dobirne-core",
     libraryDependencies ++= Seq(
-      "org.typelevel"  %% "cats-core"        % CatsVersion,
-      "org.typelevel"  %% "cats-effect"      % CatsEffectVersion,
+      "org.typelevel" %% "cats-core"   % CatsVersion,
+      "org.typelevel" %% "cats-effect" % CatsEffectVersion,
       // For testing
-      "org.scalatest"     %% "scalatest"        % ScalaTestVersion % Test,
-      "org.scalatestplus" %% "scalacheck-1-15"  % ScalaTestPlusVersion % Test,
-      "org.scalacheck"    %% "scalacheck"       % ScalaCheckVersion % Test,
-      "org.typelevel"     %% "cats-laws"        % CatsVersion % Test,
-      "org.typelevel"     %% "cats-effect-laws" % CatsEffectVersion % Test,
-    ),
+      "org.scalatest" %% "scalatest"           % ScalaTestVersion     % Test,
+      "org.scalatestplus" %% "scalacheck-1-15" % ScalaTestPlusVersion % Test,
+      "org.scalacheck" %% "scalacheck"         % ScalaCheckVersion    % Test,
+      "org.typelevel" %% "cats-laws"           % CatsVersion          % Test,
+      "org.typelevel" %% "cats-effect-laws"    % CatsEffectVersion    % Test
+    )
   )

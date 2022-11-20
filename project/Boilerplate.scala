@@ -13,7 +13,7 @@ object Boilerplate {
     */
   def filterOutMultipleDependenciesFromGeneratedPomXml(list: List[(String, Regex)]*) =
     list.foldLeft(List.empty[Def.Setting[_]]) { (acc, elem) =>
-      acc ++ filterOutDependencyFromGeneratedPomXml(elem:_*)
+      acc ++ filterOutDependencyFromGeneratedPomXml(elem: _*)
     }
 
   /**
@@ -32,23 +32,26 @@ object Boilerplate {
   def filterOutDependencyFromGeneratedPomXml(conditions: (String, Regex)*) = {
     def shouldExclude(e: Elem) =
       e.label == "dependency" && {
-        conditions.forall { case (key, regex) =>
-          e.child.exists(child => child.label == key && regex.findFirstIn(child.text).isDefined)
+        conditions.forall {
+          case (key, regex) =>
+            e.child.exists(child => child.label == key && regex.findFirstIn(child.text).isDefined)
         }
       }
 
-    if (conditions.isEmpty) Nil else {
+    if (conditions.isEmpty) Nil
+    else {
       Seq(
         // For evicting Scoverage out of the generated POM
         // See: https://github.com/scoverage/sbt-scoverage/issues/153
         pomPostProcess := { (node: xml.Node) =>
           new RuleTransformer(new RewriteRule {
-            override def transform(node: xml.Node): Seq[xml.Node] = node match {
-              case e: Elem if shouldExclude(e) => Nil
-              case _ => Seq(node)
-            }
+            override def transform(node: xml.Node): Seq[xml.Node] =
+              node match {
+                case e: Elem if shouldExclude(e) => Nil
+                case _ => Seq(node)
+              }
           }).transform(node).head
-        },
+        }
       )
     }
   }
@@ -67,22 +70,20 @@ object Boilerplate {
               case Some((2, y)) if y == 11 => Seq(new File(dir.getPath + "-2.11"))
               case Some((2, y)) if y == 12 => Seq(new File(dir.getPath + "-2.12"))
               case Some((2, y)) if y == 13 => Seq(new File(dir.getPath + "-2.13"))
-              case _                       => Nil
+              case _ => Nil
             },
-
             scalaPartV.value match {
-              case Some((2, n)) if n > 12  => Seq(new File(dir.getPath + "-2.12+"))
+              case Some((2, n)) if n > 12 => Seq(new File(dir.getPath + "-2.12+"))
               case Some((2, n)) if n == 12 => Seq(new File(dir.getPath + "-2.12+"), new File(dir.getPath + "-2.12-"))
-              case Some((2, n)) if n < 12  => Seq(new File(dir.getPath + "-2.12-"))
-              case _                       => Nil
+              case Some((2, n)) if n < 12 => Seq(new File(dir.getPath + "-2.12-"))
+              case _ => Nil
             },
-
             scalaPartV.value match {
-              case Some((2, n)) if n > 13  => Seq(new File(dir.getPath + "-2.13+"))
+              case Some((2, n)) if n > 13 => Seq(new File(dir.getPath + "-2.13+"))
               case Some((2, n)) if n == 13 => Seq(new File(dir.getPath + "-2.13+"), new File(dir.getPath + "-2.13-"))
-              case Some((2, n)) if n < 13  => Seq(new File(dir.getPath + "-2.13-"))
-              case _                       => Nil
-            },
+              case Some((2, n)) if n < 13 => Seq(new File(dir.getPath + "-2.13-"))
+              case _ => Nil
+            }
           ).flatten
         }
       }
@@ -93,10 +94,10 @@ object Boilerplate {
     * Skip publishing artifact for this project.
     */
   lazy val doNotPublishArtifact = Seq(
-    publish / skip := true,
-    publish := (()),
-    publishLocal := (()),
+    publish / skip  := true,
+    publish         := (()),
+    publishLocal    := (()),
     publishArtifact := false,
-    publishTo := None
+    publishTo       := None
   )
 }
