@@ -4,7 +4,7 @@ import Boilerplate._
 // ---------------------------------------------------------------------------
 // Commands
 
-lazy val aggregatorIDs = Seq("core")
+lazy val aggregatorIDs = Seq("core", "redis4cats-contrib")
 
 addCommandAlias("ci-jvm", ";" + aggregatorIDs.map(id => s"${id}/clean ;${id}/Test/compile ;${id}/test").mkString(";"))
 addCommandAlias("ci-package", ";scalafmtCheckAll ;package")
@@ -116,7 +116,7 @@ def defaultProjectConfiguration(pr: Project) = {
 
 lazy val root = project
   .in(file("."))
-  .aggregate(core)
+  .aggregate(core, `redis4cats-contrib`)
   .configure(defaultPlugins)
   .settings(sharedSettings)
   .settings(doNotPublishArtifact)
@@ -132,6 +132,20 @@ lazy val root = project
       githubRelativeRepositoryID
     )
   )
+
+lazy val `redis4cats-contrib` = {
+  project
+    .in(file("redis4cats-contrib"))
+    .configure(defaultProjectConfiguration)
+    .settings(
+      name := "redis4cats-contrib",
+      libraryDependencies ++= Seq(
+        "org.typelevel" %% "cats-core" % CatsVersion,
+        "org.typelevel" %% "cats-effect" % CatsEffectVersion,
+        "dev.profunktor" %% "redis4cats-effects" % "1.0.0"
+      )
+    )
+}
 
 lazy val core = project
   .in(file("core"))
