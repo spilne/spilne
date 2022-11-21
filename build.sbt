@@ -142,7 +142,9 @@ lazy val `redis4cats-contrib` = {
       libraryDependencies ++= Seq(
         "org.typelevel" %% "cats-core" % CatsVersion,
         "org.typelevel" %% "cats-effect" % CatsEffectVersion,
-        "dev.profunktor" %% "redis4cats-effects" % "1.0.0"
+        "dev.profunktor" %% "redis4cats-effects" % "1.0.0",
+        "com.dimafeng" %% "testcontainers-scala-munit" % "0.40.11" % Test,
+        "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test
       )
     )
 }

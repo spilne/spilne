@@ -33,7 +33,8 @@ object CachedScript {
   def apply[F[_]: Concurrent, K, V](scripting: ScriptCommands[F, K, V])(script: String): F[CachedScript[F, K, V]] = {
     for {
       loadScriptMutex <- Semaphore[F](1)
-      scriptTokenRef  <- Ref[F].of(Option.empty[ScriptToken])
+      scriptDigest    <- scripting.digest(script)
+      scriptTokenRef  <- Ref[F].of(ScriptToken(scriptDigest, new Token()))
 
       loadedScript = {
         new CachedScript[F, K, V] {
@@ -49,14 +50,14 @@ object CachedScript {
           override def content: String = script
 
           private def execute[A](command: String => F[A]): F[A] = {
-            getCachedOrLoad.flatMap { script =>
+            getCachedScript.flatMap { script =>
               val executeScript: F[A] = command(script.digest)
 
               executeScript.recoverWith {
                 case _: RedisNoScriptException =>
                   val reloadIfNeeded: F[Unit] = loadScriptMutex.permit.surround(
                     for {
-                      shouldReload <- scriptTokenRef.get.map(_.forall(_.token eq script.token))
+                      shouldReload <- scriptTokenRef.get.map(_.token eq script.token)
                       _            <- loadScript.whenA(shouldReload)
                     } yield ()
                   )
@@ -66,19 +67,14 @@ object CachedScript {
             }
           }
 
-          private def getCachedOrLoad: F[ScriptToken] =
-            getCachedOr(loadScriptMutex.permit.surround(getCachedOr(loadScript)))
-
-          private def getCachedOr(f: => F[ScriptToken]): F[ScriptToken] =
-            scriptTokenRef.get.flatMap(_.fold(f)(_.pure[F]))
+          private def getCachedScript: F[ScriptToken] =
+            scriptTokenRef.get
 
           private def loadScript: F[ScriptToken] =
             scripting
               .scriptLoad(script)
-              .flatMap { digest =>
-                val scriptToken = ScriptToken(digest, new Token())
-                scriptTokenRef.set(Some(scriptToken)).as(scriptToken)
-              }
+              .map(ScriptToken(_, new Token()))
+              .flatTap(scriptTokenRef.set)
         }
       }
     } yield loadedScript
