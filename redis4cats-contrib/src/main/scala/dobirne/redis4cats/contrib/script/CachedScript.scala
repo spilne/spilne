@@ -8,17 +8,19 @@ import dev.profunktor.redis4cats.algebra.ScriptCommands
 import dev.profunktor.redis4cats.effects.ScriptOutputType
 import io.lettuce.core.RedisNoScriptException
 
-trait Script {
+trait Script[F[_]] {
   def content: String
+
+  def digest: F[String]
 }
 
-trait CachedScript[F[_], K, V] extends Script {
+trait CachedScript[F[_], K, V] extends Script[F] {
   def evalSha(output: ScriptOutputType[V]): F[output.R]
   def evalSha(output: ScriptOutputType[V], keys: List[K]): F[output.R]
   def evalSha(output: ScriptOutputType[V], keys: List[K], values: List[V]): F[output.R]
 }
 
-trait CachedScriptWithFixedOutputType[F[_], K, V, Out] extends Script {
+trait CachedScriptWithFixedOutputType[F[_], K, V, Out] extends Script[F] {
   def outputType: ScriptOutputType.Aux[V, Out]
   def evalSha: F[Out]
   def evalSha(keys: List[K]): F[Out]
@@ -31,12 +33,16 @@ object CachedScript {
   private case class ScriptToken(digest: String, token: Token)
 
   def apply[F[_]: Concurrent, K, V](scripting: ScriptCommands[F, K, V])(script: String): F[CachedScript[F, K, V]] = {
+    def loadScript: F[ScriptToken] =
+      scripting
+        .scriptLoad(script)
+        .map(ScriptToken(_, new Token()))
+
     for {
       loadScriptMutex <- Semaphore[F](1)
-      scriptDigest    <- scripting.digest(script)
-      scriptTokenRef  <- Ref[F].of(ScriptToken(scriptDigest, new Token()))
+      scriptTokenRef  <- Ref.ofEffect(loadScript)
 
-      loadedScript = {
+      cachedScript = {
         new CachedScript[F, K, V] {
           override def evalSha(output: ScriptOutputType[V]): F[output.R] =
             execute(scripting.evalSha(_, output))
@@ -47,10 +53,12 @@ object CachedScript {
           override def evalSha(output: ScriptOutputType[V], keys: List[K], values: List[V]): F[output.R] =
             execute(scripting.evalSha(_, output, keys, values))
 
-          override def content: String = script
+          override val content: String = script
+
+          override val digest: F[String] = scriptTokenRef.get.map(_.digest)
 
           private def execute[A](command: String => F[A]): F[A] = {
-            getCachedScript.flatMap { script =>
+            scriptTokenRef.get.flatMap { script =>
               val executeScript: F[A] = command(script.digest)
 
               executeScript.recoverWith {
@@ -58,7 +66,7 @@ object CachedScript {
                   val reloadIfNeeded: F[Unit] = loadScriptMutex.permit.surround(
                     for {
                       shouldReload <- scriptTokenRef.get.map(_.token eq script.token)
-                      _            <- loadScript.whenA(shouldReload)
+                      _            <- (loadScript >>= scriptTokenRef.set).whenA(shouldReload)
                     } yield ()
                   )
 
@@ -66,18 +74,9 @@ object CachedScript {
               }
             }
           }
-
-          private def getCachedScript: F[ScriptToken] =
-            scriptTokenRef.get
-
-          private def loadScript: F[ScriptToken] =
-            scripting
-              .scriptLoad(script)
-              .map(ScriptToken(_, new Token()))
-              .flatTap(scriptTokenRef.set)
         }
       }
-    } yield loadedScript
+    } yield cachedScript
   }
 
   def fixedOutputType[F[_]: Concurrent, K, V, Out](
@@ -94,7 +93,8 @@ object CachedScript {
         override def evalSha(keys: List[K]): F[Out] = cachedScript.evalSha(outputType, keys)
         override def evalSha(keys: List[K], values: List[V]): F[Out] =
           cachedScript.evalSha(outputType, keys, values)
-        override def content: String = script
+        override def content: String = cachedScript.content
+        override def digest: F[String] = cachedScript.digest
       }
     }
   }
