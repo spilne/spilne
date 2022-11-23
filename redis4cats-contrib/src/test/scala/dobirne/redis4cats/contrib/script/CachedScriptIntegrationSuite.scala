@@ -10,35 +10,36 @@ import dev.profunktor.redis4cats.effects.ScriptOutputType
 import munit.{CatsEffectSuite, Location}
 import org.testcontainers.containers.wait.strategy.Wait
 
+import scala.util.Random
+
 class CachedScriptIntegrationSuite extends CatsEffectSuite with TestContainerForAll {
 
   override val containerDef: GenericContainer.Def[GenericContainer] = GenericContainer.Def(
-    dockerImage = "redis:5.0.8-alpine",
+    dockerImage = "redis:7.0.5-alpine",
     exposedPorts = Seq(6379),
     waitStrategy = Wait.forListeningPort()
   )
 
   test("cache -> execute -> flush scripts -> execute") {
     withRedis { redis =>
-      def scriptExists(digest: String): IO[Boolean] =
-        redis.scriptExists(digest).map(_.headOption.getOrElse(false))
-
       def assertScriptExists(digest: String)(implicit loc: Location): IO[Unit] =
-        scriptExists(digest).assertEquals(true)
+        redis.scriptCached(digest).assertEquals(true)
 
       def assertScriptDoesNotExist(digest: String)(implicit loc: Location): IO[Unit] =
-        scriptExists(digest).assertEquals(false)
+        redis.scriptCached(digest).assertEquals(false)
+
+      val randomString: String = Random.nextString(10)
 
       for {
         _            <- redis.scriptFlush
-        script       <- redis.cacheScript(s"return 5", ScriptOutputType.Integer)
+        script       <- redis.cacheScript(s"return ARGV[1]", ScriptOutputType.Value)
         scriptDigest <- script.digest
         _            <- assertScriptExists(scriptDigest)
-        _            <- script.evalSha.assertEquals(5L)
+        _            <- script.eval(ScriptArgs(values = randomString :: Nil)).assertEquals(randomString)
         _            <- assertScriptExists(scriptDigest)
         _            <- redis.scriptFlush
         _            <- assertScriptDoesNotExist(scriptDigest)
-        _            <- script.evalSha.assertEquals(5L)
+        _            <- script.eval(ScriptArgs(values = randomString :: Nil)).assertEquals(randomString)
         _            <- assertScriptExists(scriptDigest)
       } yield ()
     }
