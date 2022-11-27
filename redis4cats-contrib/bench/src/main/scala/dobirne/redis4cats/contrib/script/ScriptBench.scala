@@ -6,24 +6,24 @@ import dev.profunktor.redis4cats.effects.ScriptOutputType
 import org.openjdk.jmh.annotations._
 import org.openjdk.jmh.infra.Blackhole
 
-class CachedScriptBench {
+class ScriptBench {
 
   import cats.effect.unsafe.implicits.global
 
   @Benchmark
-  def cachedScript(state: CachedScriptBench.RedisState, blackhole: Blackhole): Unit = {
+  def cachedScript(state: ScriptBench.RedisState, blackhole: Blackhole): Unit = {
     val args = ScriptArgs("key1" :: Nil, "value1" :: Nil)
     blackhole.consume(state.cachedScript.eval(args).unsafeRunSync())
   }
 
   @Benchmark
-  def nonCachedScript(state: CachedScriptBench.RedisState, blackhole: Blackhole): Unit = {
+  def nonCachedScript(state: ScriptBench.RedisState, blackhole: Blackhole): Unit = {
     val args = ScriptArgs("key1" :: Nil, "value1" :: Nil)
     blackhole.consume(state.cachedScript.origin.eval(args).unsafeRunSync())
   }
 }
 
-object CachedScriptBench {
+object ScriptBench {
 
   @State(Scope.Benchmark)
   class RedisState {

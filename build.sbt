@@ -4,7 +4,11 @@ import Boilerplate._
 // ---------------------------------------------------------------------------
 // Commands
 
-lazy val aggregatorIDs = Seq("core", "redis4cats-contrib", "redis4cats-contrib-bench")
+lazy val aggregatorIDs = Seq(
+  "redis4cats-contrib-core",
+  "redis4cats-contrib-bench",
+  "tapir-contrib-core",
+)
 
 addCommandAlias("ci-jvm", ";" + aggregatorIDs.map(id => s"${id}/clean ;${id}/Test/compile ;${id}/test").mkString(";"))
 addCommandAlias("ci-package", ";scalafmtCheckAll ;package")
@@ -104,7 +108,7 @@ lazy val sharedSettings = Seq(
 /**
   * Shared configuration across all sub-projects with actual code to be published.
   */
-def defaultProjectConfiguration(pr: Project) = {
+def defaultProjectConfiguration(pr: Project): Project = {
   pr.configure(defaultPlugins)
     .settings(sharedSettings)
     .settings(crossVersionSharedSources)
@@ -116,7 +120,11 @@ def defaultProjectConfiguration(pr: Project) = {
 
 lazy val root = project
   .in(file("."))
-  .aggregate(core, `redis4cats-contrib`, `redis4cats-contrib-bench`)
+  .aggregate(
+    `redis4cats-contrib-core`,
+    `redis4cats-contrib-bench`,
+    `tapir-contrib-core`
+  )
   .configure(defaultPlugins)
   .settings(sharedSettings)
   .settings(doNotPublishArtifact)
@@ -133,16 +141,16 @@ lazy val root = project
     )
   )
 
-lazy val `redis4cats-contrib` = {
+lazy val `redis4cats-contrib-core` = {
   project
-    .in(file("redis4cats-contrib"))
+    .configure(redis4catsModule("core"))
     .configure(defaultProjectConfiguration)
     .settings(
-      name := "redis4cats-contrib",
       libraryDependencies ++= Seq(
         "org.typelevel" %% "cats-core" % CatsVersion,
         "org.typelevel" %% "cats-effect" % CatsEffectVersion,
         "dev.profunktor" %% "redis4cats-effects" % "1.0.0",
+
         "com.dimafeng" %% "testcontainers-scala-munit" % "0.40.11" % Test,
         "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test
       )
@@ -151,28 +159,25 @@ lazy val `redis4cats-contrib` = {
 
 lazy val `redis4cats-contrib-bench` = {
   project
-    .in(file("redis4cats-contrib-bench"))
+    .configure(redis4catsModule("bench"))
     .enablePlugins(JmhPlugin)
     .configure(defaultProjectConfiguration)
-    .dependsOn(`redis4cats-contrib`)
-    .settings(
-      name := "redis4cats-contrib-bench"
-    )
+    .dependsOn(`redis4cats-contrib-core`)
 }
 
-lazy val core = project
-  .in(file("core"))
-  .configure(defaultProjectConfiguration)
-  .settings(
-    name := "dobirne-core",
-    libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core"   % CatsVersion,
-      "org.typelevel" %% "cats-effect" % CatsEffectVersion,
-      // For testing
-      "org.scalatest" %% "scalatest"           % ScalaTestVersion     % Test,
-      "org.scalatestplus" %% "scalacheck-1-15" % ScalaTestPlusVersion % Test,
-      "org.scalacheck" %% "scalacheck"         % ScalaCheckVersion    % Test,
-      "org.typelevel" %% "cats-laws"           % CatsVersion          % Test,
-      "org.typelevel" %% "cats-effect-laws"    % CatsEffectVersion    % Test
-    )
-  )
+lazy val `tapir-contrib-core` = {
+  project
+    .configure(tapirModule("core"))
+    .enablePlugins(JmhPlugin)
+    .configure(defaultProjectConfiguration)
+}
+
+def submodule(moduleName: String, submoduleName: String): Project => Project = {
+  project =>
+    project
+      .in(file(s"$moduleName/$submoduleName"))
+      .settings(name := s"$moduleName-$submoduleName")
+}
+
+def redis4catsModule(submoduleName: String): Project => Project = submodule("redis4cats-contrib", submoduleName)
+def tapirModule(submoduleName: String): Project => Project = submodule("tapir-contrib", submoduleName)
