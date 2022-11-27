@@ -4,7 +4,6 @@ import cats.effect.kernel.Concurrent
 import dev.profunktor.redis4cats.algebra.{Scripting, Setter}
 import dev.profunktor.redis4cats.effects.{ScriptOutputType, SetArg, SetArgs}
 
-import java.util.UUID
 import scala.concurrent.duration.FiniteDuration
 
 trait RedLockBase[F[_]] {
@@ -14,16 +13,16 @@ trait RedLockBase[F[_]] {
 
 object RedLockBase {
 
-  def simple[F[_]: Concurrent](
-    redis: Scripting[F, String, String] with Setter[F, String, String]
+  def simple[F[_]: Concurrent, K, V](
+    redis: Scripting[F, K, V] with Setter[F, K, V]
   )(
-    resource: String,
-    token: String = UUID.randomUUID().toString
+    resource: K,
+    token: V
   ): F[RedLockBase[F]] = {
     import dobirne.redis4cats.contrib.script._
     import cats.syntax.all._
 
-    val releaseLuaScript =
+    val releaseLuaScript: String =
       s"""
          |if redis.call("get", KEYS[1]) == ARGV[1] then
          |    return redis.call("del", KEYS[1])
@@ -34,7 +33,7 @@ object RedLockBase {
 
     for {
       releaseScript <- redis.cacheScript(releaseLuaScript, ScriptOutputType.Integer)
-      releaseScriptArgs = ScriptArgs(resource :: Nil, token :: Nil)
+      releaseScriptArgs = ScriptArgs().withKeys(resource).withValues(token)
       lock = {
         new RedLockBase[F] {
           override def tryAcquire(ttl: FiniteDuration): F[Boolean] = {
@@ -43,7 +42,9 @@ object RedLockBase {
           }
 
           override def tryRelease(): F[Boolean] = {
-            releaseScript.eval(releaseScriptArgs).map(_ > 0)
+            releaseScript
+              .eval(releaseScriptArgs)
+              .map(_ > 0)
           }
         }
       }

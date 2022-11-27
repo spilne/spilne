@@ -4,7 +4,7 @@ import Boilerplate._
 // ---------------------------------------------------------------------------
 // Commands
 
-lazy val aggregatorIDs = Seq("core", "redis4cats-contrib")
+lazy val aggregatorIDs = Seq("core", "redis4cats-contrib", "redis4cats-contrib-bench")
 
 addCommandAlias("ci-jvm", ";" + aggregatorIDs.map(id => s"${id}/clean ;${id}/Test/compile ;${id}/test").mkString(";"))
 addCommandAlias("ci-package", ";scalafmtCheckAll ;package")
@@ -116,7 +116,7 @@ def defaultProjectConfiguration(pr: Project) = {
 
 lazy val root = project
   .in(file("."))
-  .aggregate(core, `redis4cats-contrib`)
+  .aggregate(core, `redis4cats-contrib`, `redis4cats-contrib-bench`)
   .configure(defaultPlugins)
   .settings(sharedSettings)
   .settings(doNotPublishArtifact)
@@ -146,6 +146,17 @@ lazy val `redis4cats-contrib` = {
         "com.dimafeng" %% "testcontainers-scala-munit" % "0.40.11" % Test,
         "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test
       )
+    )
+}
+
+lazy val `redis4cats-contrib-bench` = {
+  project
+    .in(file("redis4cats-contrib-bench"))
+    .enablePlugins(JmhPlugin)
+    .configure(defaultProjectConfiguration)
+    .dependsOn(`redis4cats-contrib`)
+    .settings(
+      name := "redis4cats-contrib-bench"
     )
 }
 

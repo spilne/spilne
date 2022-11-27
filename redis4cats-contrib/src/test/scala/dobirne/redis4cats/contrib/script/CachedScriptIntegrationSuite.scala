@@ -35,11 +35,11 @@ class CachedScriptIntegrationSuite extends CatsEffectSuite with TestContainerFor
         script       <- redis.cacheScript(s"return ARGV[1]", ScriptOutputType.Value)
         scriptDigest <- script.digest
         _            <- assertScriptExists(scriptDigest)
-        _            <- script.eval(ScriptArgs(values = randomString :: Nil)).assertEquals(randomString)
+        _            <- script.eval(ScriptArgs().withValues(randomString)).assertEquals(randomString)
         _            <- assertScriptExists(scriptDigest)
         _            <- redis.scriptFlush
         _            <- assertScriptDoesNotExist(scriptDigest)
-        _            <- script.eval(ScriptArgs(values = randomString :: Nil)).assertEquals(randomString)
+        _            <- script.eval(ScriptArgs().withValues(randomString)).assertEquals(randomString)
         _            <- assertScriptExists(scriptDigest)
       } yield ()
     }
