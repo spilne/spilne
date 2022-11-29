@@ -7,7 +7,8 @@ import Boilerplate._
 lazy val aggregatorIDs = Seq(
   "redis4cats-contrib-core",
   "redis4cats-contrib-bench",
-  "tapir-contrib-core",
+  "tapir-contrib-server",
+  "tapir-contrib-log4cats",
 )
 
 addCommandAlias("ci-jvm", ";" + aggregatorIDs.map(id => s"${id}/clean ;${id}/Test/compile ;${id}/test").mkString(";"))
@@ -123,7 +124,8 @@ lazy val root = project
   .aggregate(
     `redis4cats-contrib-core`,
     `redis4cats-contrib-bench`,
-    `tapir-contrib-core`
+    `tapir-contrib-server`,
+    `tapir-contrib-log4cats`
   )
   .configure(defaultPlugins)
   .settings(sharedSettings)
@@ -165,11 +167,27 @@ lazy val `redis4cats-contrib-bench` = {
     .dependsOn(`redis4cats-contrib-core`)
 }
 
-lazy val `tapir-contrib-core` = {
+lazy val `tapir-contrib-server` = {
   project
-    .configure(tapirModule("core"))
-    .enablePlugins(JmhPlugin)
+    .configure(tapirModule("server"))
     .configure(defaultProjectConfiguration)
+    .settings(
+      libraryDependencies ++= Seq(
+        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.2.1"
+      )
+    )
+}
+
+lazy val `tapir-contrib-log4cats` = {
+  project
+    .configure(tapirModule("log4cats"))
+    .configure(defaultProjectConfiguration)
+    .dependsOn( `tapir-contrib-server`)
+    .settings(
+      libraryDependencies ++= Seq(
+        "org.typelevel" %% "log4cats-core" % "2.5.0"
+      )
+    )
 }
 
 def submodule(moduleName: String, submoduleName: String): Project => Project = {
