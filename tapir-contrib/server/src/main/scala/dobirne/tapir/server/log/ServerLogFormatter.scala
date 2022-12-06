@@ -76,7 +76,7 @@ trait StructuredLogFormatterL extends ServerLogFormatter[StructuredLogRecord, Lo
   override def formatException(ctx: ExceptionContext[_, _], e: Throwable, token: Long): StructuredLogRecord = {
     StructuredLogRecord(
       s"Exception when handling request: ${ctx.request.showShort}, by: ${ctx.endpoint.showShort}${took(token)}",
-      error = e
+      error = Some(e)
     )
   }
 
