@@ -4,14 +4,7 @@ import Boilerplate._
 // ---------------------------------------------------------------------------
 // Commands
 
-lazy val aggregatorIDs = Seq(
-  "redis4cats-contrib-core",
-  "redis4cats-contrib-bench",
-  "tapir-contrib-server",
-  "tapir-contrib-log4cats",
-)
-
-addCommandAlias("ci-jvm", ";" + aggregatorIDs.map(id => s"${id}/clean ;${id}/Test/compile ;${id}/test").mkString(";"))
+addCommandAlias("ci-jvm", s";clean ;compile ;test")
 addCommandAlias("ci-package", ";scalafmtCheckAll ;package")
 addCommandAlias("ci", ";project root ;reload ;+scalafmtCheckAll ;+ci-jvm ;+package")
 addCommandAlias("release", ";+clean ;ci-release")
@@ -125,7 +118,8 @@ lazy val root = project
     `redis4cats-contrib-core`,
     `redis4cats-contrib-bench`,
     `tapir-contrib-server`,
-    `tapir-contrib-log4cats`
+    `tapir-contrib-log4cats`,
+    `fs2-contrib-batcher`
   )
   .configure(defaultPlugins)
   .settings(sharedSettings)
@@ -190,6 +184,17 @@ lazy val `tapir-contrib-log4cats` = {
     )
 }
 
+lazy val `fs2-contrib-batcher` = {
+  project
+    .configure(fs2Module("batcher"))
+    .configure(defaultProjectConfiguration)
+    .settings(
+      libraryDependencies ++= Seq(
+        "co.fs2" %% "fs2-core" % "3.0.4"
+      )
+    )
+}
+
 def submodule(moduleName: String, submoduleName: String): Project => Project = {
   project =>
     project
@@ -199,3 +204,5 @@ def submodule(moduleName: String, submoduleName: String): Project => Project = {
 
 def redis4catsModule(submoduleName: String): Project => Project = submodule("redis4cats-contrib", submoduleName)
 def tapirModule(submoduleName: String): Project => Project = submodule("tapir-contrib", submoduleName)
+
+def fs2Module(submoduleName: String): Project => Project = submodule("fs2-contrib", submoduleName)
