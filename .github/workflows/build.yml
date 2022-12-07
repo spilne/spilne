@@ -7,6 +7,9 @@ on:
     branches: ['*']
     tags: ["v[0-9]+*"]
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   jvm-tests:
     name: JVM (scala ${{ matrix.scala }}, jvm ${{ matrix.java }})
@@ -84,5 +87,3 @@ jobs:
       - name: sbt publish
         run: |
           sbt +clean publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
