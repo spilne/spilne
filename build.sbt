@@ -192,10 +192,10 @@ lazy val `fs2-contrib-batcher` = {
     )
 }
 
-def submodule(moduleName: String, submoduleName: String): Project => Project = { project =>
+def submodule(module: String, submodule: String): Project => Project = { project =>
   project
-    .in(file(s"$moduleName/$submoduleName"))
-    .settings(name := s"$moduleName-$submoduleName")
+    .in(file(s"$module/$submodule"))
+    .settings(moduleName := s"$module-$submodule")
 }
 
 def redis4catsModule(submoduleName: String): Project => Project = submodule("redis4cats-contrib", submoduleName)

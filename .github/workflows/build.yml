@@ -86,4 +86,5 @@ jobs:
 
       - name: sbt publish
         run: |
+          git fetch --tags
           sbt +clean publish
