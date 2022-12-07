@@ -28,7 +28,6 @@ def defaultPlugins: Project ⇒ Project =
     }
 
     withCoverage
-      .enablePlugins(GitBranchPrompt)
   }
 
 lazy val sharedSettings = Seq(
@@ -91,13 +90,11 @@ lazy val sharedSettings = Seq(
     )),
   developers := List(
     Developer(
-      id = "dobirne",
-      name = "dobirne",
-      email = "dobirne",
-      url = url("https://dobirne.github.io")
-    )),
-  // -- Settings meant for deployment on oss.sonatype.org
-  sonatypeProfileName := organization.value
+      id = "zakolenko",
+      name = "Roman Zakolenko",
+      email = "zakolenkoroman@gmail.com",
+      url = url("https://zakolenko.github.io")
+    ))
 )
 
 /**
