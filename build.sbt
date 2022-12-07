@@ -7,7 +7,6 @@ import Boilerplate._
 addCommandAlias("ci-jvm", s";clean ;compile ;test")
 addCommandAlias("ci-package", ";scalafmtCheckAll ;package")
 addCommandAlias("ci", ";project root ;reload ;+scalafmtCheckAll ;+ci-jvm ;+package")
-addCommandAlias("release", ";+clean ;ci-release")
 
 // ---------------------------------------------------------------------------
 // Dependencies
@@ -37,10 +36,12 @@ lazy val sharedSettings = Seq(
   projectWebsiteRootURL      := "https://dobirne.github.io/",
   projectWebsiteBasePath     := "/dobirne/",
   githubOwnerID              := "dobirne",
+  githubOwner                := "dobirne",
+  githubRepository           := "dobirne",
   githubRelativeRepositoryID := "dobirne",
   organization               := "io.github.dobirne",
   scalaVersion               := "2.13.6",
-  crossScalaVersions         := Seq("2.12.14", "2.13.6", "3.0.2"),
+  crossScalaVersions         := Seq("2.12.14", "2.13.6" /*, "3.0.2"*/ ),
   // Turning off fatal warnings for doc generation
   Compile / doc / scalacOptions ~= filterConsoleScalacOptions,
   // Turning off fatal warnings and certain annoyances during testing
@@ -143,12 +144,11 @@ lazy val `redis4cats-contrib-core` = {
     .configure(defaultProjectConfiguration)
     .settings(
       libraryDependencies ++= Seq(
-        "org.typelevel" %% "cats-core" % CatsVersion,
-        "org.typelevel" %% "cats-effect" % CatsEffectVersion,
-        "dev.profunktor" %% "redis4cats-effects" % "1.0.0",
-
+        "org.typelevel" %% "cats-core"                 % CatsVersion,
+        "org.typelevel" %% "cats-effect"               % CatsEffectVersion,
+        "dev.profunktor" %% "redis4cats-effects"       % "1.0.0",
         "com.dimafeng" %% "testcontainers-scala-munit" % "0.40.11" % Test,
-        "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test
+        "org.typelevel" %% "munit-cats-effect-3"       % "1.0.7"   % Test
       )
     )
 }
@@ -176,7 +176,7 @@ lazy val `tapir-contrib-log4cats` = {
   project
     .configure(tapirModule("log4cats"))
     .configure(defaultProjectConfiguration)
-    .dependsOn( `tapir-contrib-server`)
+    .dependsOn(`tapir-contrib-server`)
     .settings(
       libraryDependencies ++= Seq(
         "org.typelevel" %% "log4cats-core" % "2.5.0"
@@ -195,11 +195,10 @@ lazy val `fs2-contrib-batcher` = {
     )
 }
 
-def submodule(moduleName: String, submoduleName: String): Project => Project = {
-  project =>
-    project
-      .in(file(s"$moduleName/$submoduleName"))
-      .settings(name := s"$moduleName-$submoduleName")
+def submodule(moduleName: String, submoduleName: String): Project => Project = { project =>
+  project
+    .in(file(s"$moduleName/$submoduleName"))
+    .settings(name := s"$moduleName-$submoduleName")
 }
 
 def redis4catsModule(submoduleName: String): Project => Project = submodule("redis4cats-contrib", submoduleName)
