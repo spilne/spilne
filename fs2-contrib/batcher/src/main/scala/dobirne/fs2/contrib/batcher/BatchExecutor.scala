@@ -1,9 +1,9 @@
 package dobirne.fs2.contrib.batcher
 
-import cats.MonadError
+import cats.MonadThrow
 import cats.implicits._
 
-private[batcher] abstract class BatchExecutor[F[_], Batch](implicit F: MonadError[F, Throwable]) {
+private[batcher] abstract class BatchExecutor[F[_]: MonadThrow, Batch] {
   type Out
 
   def apply(batch: Batch): F[Unit] = {
@@ -17,10 +17,10 @@ private[batcher] abstract class BatchExecutor[F[_], Batch](implicit F: MonadErro
 
 private[batcher] object BatchExecutor {
 
-  def apply[F[_], Batch, BatchOut](
+  def apply[F[_]: MonadThrow, Batch, BatchOut](
     _execute: Batch => F[BatchOut],
     _handleResult: (Batch, Either[Throwable, BatchOut]) => F[Unit]
-  )(implicit F: MonadError[F, Throwable]): BatchExecutor[F, Batch] =
+  ): BatchExecutor[F, Batch] =
     new BatchExecutor[F, Batch] {
       type Out = BatchOut
 
@@ -31,10 +31,8 @@ private[batcher] object BatchExecutor {
         _handleResult(batch, errorOrOut)
     }
 
-  def unit[F[_], In](
+  def unit[F[_]: MonadThrow, In](
     execute: fs2.Chunk[Request[F, In, Unit]] => F[Unit]
-  )(implicit
-    F: MonadError[F, Throwable]
   ): BatchExecutor[F, fs2.Chunk[Request[F, In, Unit]]] = {
     apply[F, fs2.Chunk[Request[F, In, Unit]], Unit](
       execute,
@@ -42,10 +40,8 @@ private[batcher] object BatchExecutor {
     )
   }
 
-  def withCorrelationId[F[_], Id, In, Res](
+  def withCorrelationId[F[_]: MonadThrow, Id, In, Res](
     execute: fs2.Chunk[(Id, Request[F, In, Res])] => F[Map[Id, Res]]
-  )(implicit
-    F: MonadError[F, Throwable]
   ): BatchExecutor[F, fs2.Chunk[(Id, Request[F, In, Res])]] = {
     val notFoundError = new NoSuchElementException("response not found")
 
