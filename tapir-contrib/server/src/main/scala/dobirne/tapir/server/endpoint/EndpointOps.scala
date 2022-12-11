@@ -4,8 +4,8 @@ import sttp.tapir.Endpoint
 
 final class EndpointOps[S, I, EI, O, -R](private val endpoint: Endpoint[S, I, EI, O, R]) extends AnyVal {
 
-  def serverLogicP[F[_], P](f: P => I => F[Either[EI, O]]): SecureEndpointWithServerLogic[F, S, P, I, EI, O, R] =
-    SecureEndpointWithServerLogic(endpoint, _ => f)
+  def deferredServerLogic[F[_], P](f: P => I => F[Either[EI, O]]): DeferredServerEndpoint[F, S, P, I, EI, O, R] =
+    DeferredServerEndpoint(endpoint, _ => f)
 }
 
 trait EndpointSyntax {

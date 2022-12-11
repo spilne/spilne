@@ -4,58 +4,31 @@ import sttp.model.Header
 import sttp.monad.MonadError
 import sttp.tapir.AttributeKey
 import sttp.tapir.model.ServerRequest
-import sttp.tapir.server.ServerEndpoint
-import sttp.tapir.server.interceptor.{EndpointInterceptor, RequestHandler, RequestInterceptor, RequestResult, Responder}
+import sttp.tapir.server.interceptor.RequestResult
+import sttp.tapir.server.interceptor.RequestResult.Response
 
 import java.util.UUID
 
-class RequestIdInterceptor[F[_]](
+class RequestIdInterceptor[F[_]: MonadError](
   genRequestId: => F[String],
   headerName: String = RequestIdInterceptor.RequestIdHeaderName,
   requestIdAttrKey: AttributeKey[String] = RequestIdInterceptor.RequestIdAttribute
-) extends RequestInterceptor[F] {
+) extends TransformRequestAndResponse[F, Header] {
+  import dobirne.tapir._
   import sttp.monad.syntax._
 
-  override def apply[R, B](
-    responder: Responder[F, B],
-    requestHandler: EndpointInterceptor[F] => RequestHandler[F, R, B]
-  ): RequestHandler[F, R, B] = {
-    new RequestHandler[F, R, B] {
-      val next: RequestHandler[F, R, B] = requestHandler(EndpointInterceptor.noop)
+  override def transformRequest(req: ServerRequest): F[(Header, ServerRequest)] = {
+    for {
+      maybeHeader <- req.headers.find(_.is(headerName)).unit
+      header      <- maybeHeader.fold(genRequestId.map(id => Header(headerName, id)))(_.unit)
+      requestId = header.value
+      requestWithHeader = if (maybeHeader.isEmpty) req.addHeader(header) else req
+      requestWithHeaderAndAttribute = requestWithHeader.attribute(requestIdAttrKey, requestId)
+    } yield (header, requestWithHeaderAndAttribute)
+  }
 
-      override def apply(
-        request: ServerRequest,
-        endpoints: List[ServerEndpoint[R, F]]
-      )(implicit
-        monad: MonadError[F]
-      ): F[RequestResult[B]] = {
-        val maybeHeader: Option[Header] = request.headers.find(_.is(headerName))
-
-        for {
-          header <- maybeHeader.fold(genRequestId.map(id => Header(headerName, id)))(monad.unit)
-          requestId = header.value
-
-          requestWithHeader = {
-            if (maybeHeader.isDefined) request
-            else
-              request.withOverride(
-                headersOverride = Some(request.headers.appended(header)),
-                protocolOverride = None,
-                connectionInfoOverride = None
-              )
-          }
-
-          reqResult <- next(requestWithHeader.attribute(requestIdAttrKey, requestId), endpoints)
-
-          finalReqResult = {
-            reqResult match {
-              case RequestResult.Response(response) => RequestResult.Response(response.addHeaders(header :: Nil))
-              case failure => failure
-            }
-          }
-        } yield finalReqResult
-      }
-    }
+  override def transformResponse[B](header: Header, res: Response[B]): F[RequestResult[B]] = {
+    MonadError[F].unit(Response(res.response.addHeaders(header :: Nil)))
   }
 }
 
@@ -64,11 +37,11 @@ object RequestIdInterceptor {
   val RequestIdAttribute: AttributeKey[String] = new AttributeKey("dobirne.tapir.server.interceptor.RequestId")
   val RequestIdHeaderName: String = "X-Request-ID"
 
-  def default[F[_]: MonadError]: RequestIdInterceptorBuilder[F] = new RequestIdInterceptorBuilder[F]
+  def apply[F[_]: MonadError]: RequestIdInterceptorBuilder[F] = new RequestIdInterceptorBuilder[F]
 
   final class RequestIdInterceptorBuilder[F[_]: MonadError] {
 
-    def apply(
+    def default(
       genRequestId: => F[String] = MonadError[F].eval(UUID.randomUUID().toString),
       headerName: String = RequestIdInterceptor.RequestIdHeaderName,
       requestIdAttrKey: AttributeKey[String] = RequestIdInterceptor.RequestIdAttribute

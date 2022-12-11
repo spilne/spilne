@@ -5,7 +5,7 @@ import sttp.monad.syntax._
 import sttp.tapir._
 import sttp.tapir.server.ServerEndpoint
 
-case class SecureEndpointWithServerLogic[F[_], SECURITY_INPUT, PRINCIPAL, INPUT, ERROR_OUTPUT, OUTPUT, -R](
+case class DeferredServerEndpoint[F[_], SECURITY_INPUT, PRINCIPAL, INPUT, ERROR_OUTPUT, OUTPUT, -R](
   endpoint: Endpoint[SECURITY_INPUT, INPUT, ERROR_OUTPUT, OUTPUT, R],
   serverLogic: MonadError[F] => PRINCIPAL => INPUT => F[Either[ERROR_OUTPUT, OUTPUT]]
 ) extends EndpointMetaOps { outer =>
