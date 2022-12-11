@@ -40,7 +40,7 @@ lazy val sharedSettings = Seq(
   githubRelativeRepositoryID := "dobirne",
   organization               := "io.github.dobirne",
   scalaVersion               := "2.13.6",
-  crossScalaVersions         := Seq("2.12.14", "2.13.6" /*, "3.0.2"*/ ),
+  crossScalaVersions         := Seq("2.13.6" /*, "3.0.2"*/ ),
   // Turning off fatal warnings for doc generation
   Compile / doc / scalacOptions ~= filterConsoleScalacOptions,
   // Turning off fatal warnings and certain annoyances during testing
