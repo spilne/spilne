@@ -11,8 +11,8 @@ addCommandAlias("ci", ";project root ;reload ;+scalafmtCheckAll ;+ci-jvm ;+packa
 // ---------------------------------------------------------------------------
 // Dependencies
 
-val CatsVersion = "2.6.1"
-val CatsEffectVersion = "3.2.7"
+val CatsVersion = "2.9.0"
+val CatsEffectVersion = "3.4.6"
 val ScalaTestVersion = "3.2.9"
 val ScalaTestPlusVersion = "3.2.9.0"
 val ScalaCheckVersion = "1.15.4"
@@ -143,7 +143,7 @@ lazy val `redis4cats-contrib-core` = {
       libraryDependencies ++= Seq(
         "org.typelevel" %% "cats-core"                 % CatsVersion,
         "org.typelevel" %% "cats-effect"               % CatsEffectVersion,
-        "dev.profunktor" %% "redis4cats-effects"       % "1.0.0",
+        "dev.profunktor" %% "redis4cats-effects"       % "1.4.1",
         "com.dimafeng" %% "testcontainers-scala-munit" % "0.40.11" % Test,
         "org.typelevel" %% "munit-cats-effect-3"       % "1.0.7"   % Test
       )
@@ -187,7 +187,7 @@ lazy val `fs2-contrib-batcher` = {
     .configure(defaultProjectConfiguration)
     .settings(
       libraryDependencies ++= Seq(
-        "co.fs2" %% "fs2-core" % "3.0.4"
+        "co.fs2" %% "fs2-core" % "3.6.1"
       )
     )
 }

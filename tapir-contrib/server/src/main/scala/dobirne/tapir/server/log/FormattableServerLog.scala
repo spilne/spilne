@@ -39,14 +39,14 @@ trait FormattableServerLog[F[_], LogRecord, Token] extends ServerLog[F] {
 
 object FormattableServerLog {
 
-  def apply[F[_], Record, Token](
-    serverLogFormatter: ServerLogFormatter[Record, Token],
-    serverLogWriter: ServerLogWriter[F, Record],
+  def apply[F[_], LogRecord, Token](
+    serverLogFormatter: ServerLogFormatter[LogRecord, Token],
+    serverLogWriter: ServerLogWriter[F, LogRecord],
     tokenGen: () => Token
-  ): FormattableServerLog[F, Record, Token] = {
-    new FormattableServerLog[F, Record, Token] {
-      override protected val formatter: ServerLogFormatter[Record, Token] = serverLogFormatter
-      override protected val writer: ServerLogWriter[F, Record] = serverLogWriter
+  ): FormattableServerLog[F, LogRecord, Token] = {
+    new FormattableServerLog[F, LogRecord, Token] {
+      override protected val formatter: ServerLogFormatter[LogRecord, Token] = serverLogFormatter
+      override protected val writer: ServerLogWriter[F, LogRecord] = serverLogWriter
 
       override def requestToken: Token = tokenGen()
     }
