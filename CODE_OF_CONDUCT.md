@@ -8,6 +8,6 @@ Everyone is expected to follow the [Scala Code of Conduct] when discussing the p
 
 Any questions, concerns, or moderation requests please contact a maintainer of the project:
 
-- NONE: [Website](https://dobirne.github.io) / [GitHub](https://github.com/dobirne)
+- NONE: [Website](https://spilne.github.io) / [GitHub](https://github.com/spilne)
 
 [Scala Code of Conduct]: https://www.scala-lang.org/conduct/

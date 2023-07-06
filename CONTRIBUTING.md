@@ -1,10 +1,10 @@
-# Contributing to dobirne
+# Contributing to spilne
 
-The dobirne project welcomes contributions from anybody wishing to participate. All code or documentation that is provided must be licensed with the same license that dobirne is licensed with (Apache 2.0, see [LICENSE](./LICENSE.md)).
+The spilne project welcomes contributions from anybody wishing to participate. All code or documentation that is provided must be licensed with the same license that spilne is licensed with (Apache 2.0, see [LICENSE](./LICENSE.md)).
 
 ## Code of Conduct
 
-People are expected to follow the [Scala Code of Conduct](./CODE_OF_CONDUCT.md) when discussing dobirne on the Github page, Gitter channel, or other venues.
+People are expected to follow the [Scala Code of Conduct](./CODE_OF_CONDUCT.md) when discussing spilne on the Github page, Gitter channel, or other venues.
 
 We hope that our community will be respectful, helpful, and kind. If you find yourself embroiled in a situation that becomes heated, or that fails to live up to our expectations, you should disengage and contact one of the project maintainers in private. We hope to avoid letting minor aggressions and misunderstandings escalate into larger problems.
 
@@ -39,8 +39,8 @@ We hope that our community will be respectful, helpful, and kind. If you find yo
 All code must be licensed under the Apache 2.0 license and all files must include the following copyright header:
 
 ```
-Copyright (c) $today.year the dobirne contributors.
-See the project homepage at: https://dobirne.github.io/dobirne/
+Copyright (c) $today.year the spilne contributors.
+See the project homepage at: https://spilne.github.io/spilne/
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

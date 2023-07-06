@@ -31,14 +31,14 @@ def defaultPlugins: Project ⇒ Project =
   }
 
 lazy val sharedSettings = Seq(
-  projectTitle               := "dobirne",
-  projectWebsiteRootURL      := "https://dobirne.github.io/",
-  projectWebsiteBasePath     := "/dobirne/",
-  githubOwnerID              := "dobirne",
-  githubOwner                := "dobirne",
-  githubRepository           := "dobirne",
-  githubRelativeRepositoryID := "dobirne",
-  organization               := "io.github.dobirne",
+  projectTitle               := "spilne",
+  projectWebsiteRootURL      := "https://spilne.github.io/",
+  projectWebsiteBasePath     := "/spilne/",
+  githubOwnerID              := "spilne",
+  githubOwner                := "spilne",
+  githubRepository           := "spilne",
+  githubRelativeRepositoryID := "spilne",
+  organization               := "io.github.spilne",
   scalaVersion               := "2.13.6",
   crossScalaVersions         := Seq("2.13.7" /*, "3.0.2"*/ ),
   // Turning off fatal warnings for doc generation
