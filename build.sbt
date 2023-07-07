@@ -117,7 +117,8 @@ lazy val root = project
     `redis4cats-contrib-bench`,
     `tapir-contrib-server`,
     `tapir-contrib-log4cats`,
-    `fs2-contrib-batcher`
+    `fs2-contrib-batcher`,
+    `foldify`
   )
   .configure(defaultPlugins)
   .settings(sharedSettings)
@@ -188,6 +189,17 @@ lazy val `fs2-contrib-batcher` = {
     .settings(
       libraryDependencies ++= Seq(
         "co.fs2" %% "fs2-core" % "3.6.1"
+      )
+    )
+}
+
+lazy val `foldify` = {
+  project
+    .in(file("foldify"))
+    .configure(defaultProjectConfiguration)
+    .settings(
+      libraryDependencies ++= Seq(
+        "org.typelevel" %% "cats-core" % CatsVersion
       )
     )
 }
