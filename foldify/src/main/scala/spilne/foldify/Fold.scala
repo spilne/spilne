@@ -4,6 +4,8 @@ import cats.arrow.Profunctor
 import cats.syntax.all._
 import cats.{~>, Applicative, Eq, Monad, Monoid, Semigroup}
 
+import scala.collection.{mutable, Factory, IterableFactory}
+
 trait FoldF[F[_], I, O] { self =>
   type S
 
@@ -38,8 +40,8 @@ trait FoldF[F[_], I, O] { self =>
   def mapK[G[+_]](implicit fk: F ~> G, M: Monad[G]): FoldF[G, I, O] =
     Fold.foldF(fk(self.init))((s, i) => fk(self.step(s, i)), s => fk(self.done(s)))
 
-  def widenL[A](implicit ev: A <:< I): FoldF[F, A, O] = contramap(ev)
-  def widenR[A](implicit ev: O <:< A): FoldF[F, I, A] = map(ev)
+  def leftNarrow[I1 <: I]: FoldF[F, I1, O] = this.asInstanceOf[FoldF[F, I1, O]]
+  def rightWiden[O1 >: O]: FoldF[F, I, O1] = this.asInstanceOf[FoldF[F, I, O1]]
 }
 
 trait FoldInstances {
@@ -62,6 +64,12 @@ trait FoldInstances {
         )
       }
     }
+
+  implicit def fromFactory[CC[_], A](factory: Factory[A, CC[A]]): Fold[A, CC[A]] =
+    Fold.foldF[cats.Id, mutable.Builder[A, CC[A]], A, CC[A]](factory.newBuilder)(_.addOne(_), _.result())
+
+  implicit def fromIterableFactory[CC[_], A](factory: IterableFactory[CC]): Fold[A, CC[A]] =
+    fromFactory[CC, A](IterableFactory.toFactory(factory))
 }
 
 trait FoldBaseConstructors {
@@ -102,7 +110,7 @@ trait FoldBaseConstructors {
     foldLeftF[cats.Id, I, O](init)(step)
 
   @inline def reduceF[F[_]: Monad, I](f: (I, I) => F[I]): FoldF[F, I, Option[I]] =
-    onFirstAndRest[F, I, I, Option[I]](identity, f, Option(_).pure[F])
+    onFirstAndRest[F, I, I, Option[I]](identity(_).pure[F], f, Option(_).pure[F])
 
   @inline def reduce[I](f: (I, I) => I): Fold[I, Option[I]] =
     reduceF[cats.Id, I](f)
@@ -113,12 +121,12 @@ trait FoldBaseConstructors {
   }
 
   @inline private[foldify] def onFirstAndRest[F[_]: Monad, S, I, O](
-    onFirst: I => S,
+    onFirst: I => F[S],
     step: (S, I) => F[S],
     done: S => F[O]
   ): FoldF[F, I, O] = {
     foldF(Monad[F].pure(null.asInstanceOf[S]))(
-      (s, i) => if (s == null) Monad[F].pure(onFirst(i)) else step(s, i),
+      (s, i) => if (s == null) onFirst(i) else step(s, i),
       done
     )
   }

@@ -21,7 +21,6 @@ trait CanBeFoldedInstances {
   implicit def foldable[CC[_]: Foldable, F[_]: Monad]: CanBeFolded[CC, F] =
     new CanBeFolded[CC, F] {
       override def foldWith[A, B](xs: CC[A])(fold: FoldF[F, A, B]): F[B] = {
-
         for {
           initState  <- fold.init
           finalState <- Foldable[CC].foldM(xs, initState)((s, a) => fold.step(s, a))
