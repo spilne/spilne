@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package spilne.tapir.server.log
+package spilne.tapir
 
-case class StructuredLogRecord(
-  msg: String,
-  context: Map[String, String] = Map.empty,
-  error: Option[Throwable] = None
-) {
-  def addContext(c: Map[String, String]): StructuredLogRecord = copy(context = context ++ c)
-}
+import spilne.tapir.model.ServerRequestSyntax
+import spilne.tapir.server.endpoint.EndpointSyntax
 
-object StructuredLogRecord {
-  def apply(msg: String, context: Map[String, String], error: Throwable): StructuredLogRecord =
-    StructuredLogRecord(msg, context, Some(error))
-}
+object syntax extends EndpointSyntax with ServerRequestSyntax
