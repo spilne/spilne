@@ -32,8 +32,7 @@ class RequestIdInterceptor[F[_]: MonadError](
   headerName: String = RequestIdInterceptor.RequestIdHeaderName,
   requestIdAttrKey: AttributeKey[String] = RequestIdInterceptor.RequestIdAttribute
 ) extends TransformRequestAndResponse[F, Header] {
-  import spilne.tapir._
-  import sttp.monad.syntax._
+  import sttp.monad.syntax.*
 
   override def transformRequest(req: ServerRequest): F[(Header, ServerRequest)] = {
     for {
