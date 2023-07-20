@@ -23,6 +23,8 @@ import sttp.tapir.model.ServerRequest
 import sttp.tapir.server.interceptor.RequestResult
 import sttp.tapir.server.interceptor.RequestResult.Response
 
+import spilne.tapir.syntax.*
+
 import java.util.UUID
 
 class RequestIdInterceptor[F[_]: MonadError](

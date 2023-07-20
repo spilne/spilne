@@ -38,7 +38,8 @@ lazy val root = tlCrossRootProject
   )
 
 lazy val `redis4cats-contrib-core` = {
-  project
+  crossProject(JVMPlatform)
+    .crossType(CrossType.Pure)
     .configure(redis4catsModule("core"))
     .settings(
       libraryDependencies ++= Seq(
@@ -52,14 +53,16 @@ lazy val `redis4cats-contrib-core` = {
 }
 
 lazy val `redis4cats-contrib-bench` = {
-  project
+  crossProject(JVMPlatform)
+    .crossType(CrossType.Pure)
     .configure(redis4catsModule("bench"))
     .enablePlugins(JmhPlugin)
     .dependsOn(`redis4cats-contrib-core`)
 }
 
 lazy val `tapir-contrib-server` = {
-  project
+  crossProject(JVMPlatform)
+    .crossType(CrossType.Pure)
     .configure(tapirModule("server"))
     .settings(
       libraryDependencies ++= Seq(
@@ -69,7 +72,8 @@ lazy val `tapir-contrib-server` = {
 }
 
 lazy val `tapir-contrib-log4cats` = {
-  project
+  crossProject(JVMPlatform)
+    .crossType(CrossType.Pure)
     .configure(tapirModule("log4cats"))
     .dependsOn(`tapir-contrib-server`)
     .settings(
@@ -80,7 +84,8 @@ lazy val `tapir-contrib-log4cats` = {
 }
 
 lazy val `fs2-contrib-batcher` = {
-  project
+  crossProject(JVMPlatform)
+    .crossType(CrossType.Pure)
     .configure(fs2Module("batcher"))
     .settings(
       libraryDependencies ++= Seq(

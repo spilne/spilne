@@ -16,7 +16,7 @@
 
 package spilne.tapir.server.log
 
-import spilne.tapir.monad._
+import spilne.tapir.monad.syntax.*
 import sttp.monad.MonadError
 import sttp.tapir.model.ServerRequest
 import sttp.tapir.server.interceptor.{DecodeFailureContext, DecodeSuccessContext, SecurityFailureContext}

@@ -19,8 +19,10 @@ package spilne.redis4cats.contrib.script
 import cats.effect.IO
 import dev.profunktor.redis4cats.{Redis, RedisCommands}
 import dev.profunktor.redis4cats.effects.ScriptOutputType
-import org.openjdk.jmh.annotations._
+import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
+
+import spilne.redis4cats.contrib.script.syntax.*
 
 class ScriptBench {
 

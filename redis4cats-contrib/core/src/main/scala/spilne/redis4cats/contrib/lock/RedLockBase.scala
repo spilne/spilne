@@ -19,6 +19,7 @@ package spilne.redis4cats.contrib.lock
 import cats.effect.kernel.Concurrent
 import dev.profunktor.redis4cats.algebra.{Scripting, Setter}
 import dev.profunktor.redis4cats.effects.{ScriptOutputType, SetArg, SetArgs}
+import spilne.redis4cats.contrib.script.syntax.*
 
 import scala.concurrent.duration.FiniteDuration
 
