@@ -25,6 +25,7 @@ import dev.profunktor.redis4cats.effect.Log
 import dev.profunktor.redis4cats.effects.ScriptOutputType
 import munit.{CatsEffectSuite, Location}
 import org.testcontainers.containers.wait.strategy.Wait
+import spilne.redis4cats.contrib.script.syntax.*
 
 import scala.util.Random
 

@@ -25,8 +25,9 @@ ThisBuild / developers ++= List(
 )
 
 val Scala3 = "3.3.0"
-ThisBuild / crossScalaVersions := Seq("2.13.11", Scala3)
-ThisBuild / scalaVersion       := Scala3 // the default Scala
+ThisBuild / crossScalaVersions     := Seq("2.13.11", Scala3)
+ThisBuild / scalaVersion           := Scala3 // the default Scala
+ThisBuild / tlCiDependencyGraphJob := false
 
 lazy val root = tlCrossRootProject
   .aggregate(
