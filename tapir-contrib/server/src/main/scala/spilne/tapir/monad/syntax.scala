@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package spilne.redis4cats.contrib
+package spilne.tapir.monad
 
-package object script extends ScriptCommandsSyntax
+object syntax extends MonadErrorSyntax

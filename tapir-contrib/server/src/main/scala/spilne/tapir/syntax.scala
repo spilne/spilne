@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package spilne
+package spilne.tapir
 
 import spilne.tapir.model.ServerRequestSyntax
 import spilne.tapir.server.endpoint.EndpointSyntax
 
-package object tapir extends EndpointSyntax with ServerRequestSyntax
+object syntax extends EndpointSyntax with ServerRequestSyntax
