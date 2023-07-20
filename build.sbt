@@ -32,7 +32,6 @@ ThisBuild / tlCiDependencyGraphJob := false
 lazy val root = tlCrossRootProject
   .aggregate(
     `redis4cats-contrib-core`,
-    `redis4cats-contrib-bench`,
     `tapir-contrib-server`,
     `tapir-contrib-log4cats`,
     `fs2-contrib-batcher`
