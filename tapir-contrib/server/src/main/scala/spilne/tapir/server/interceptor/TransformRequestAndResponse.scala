@@ -26,7 +26,7 @@ abstract class TransformRequestAndResponse[F[_]: MonadError, A] extends Transfor
 
   override def transformRequestResult[B](a: A, res: RequestResult[B]): F[RequestResult[B]] = {
     res match {
-      case response: Response[B] => transformResponse(a, response)
+      case response: Response[B] @unchecked => transformResponse(a, response)
       case failures => MonadError[F].unit(failures)
     }
   }
