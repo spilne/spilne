@@ -1,7 +1,4 @@
-addSbtPlugin("com.codecommit"            % "sbt-github-actions"  % "0.13.0")
-addSbtPlugin("com.codecommit"            % "sbt-github-packages" % "0.5.3")
-addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"        % "0.1.20")
 addSbtPlugin("org.scalameta"             % "sbt-scalafmt"        % "2.4.3")
 addSbtPlugin("org.scoverage"             % "sbt-scoverage"       % "1.8.2")
 addSbtPlugin("pl.project13.scala"        % "sbt-jmh"             % "0.4.3")
-addSbtPlugin("com.dwijnand"              % "sbt-dynver"          % "4.1.1")
+addSbtPlugin("org.typelevel"             % "sbt-typelevel"       % "0.5.0-RC9")

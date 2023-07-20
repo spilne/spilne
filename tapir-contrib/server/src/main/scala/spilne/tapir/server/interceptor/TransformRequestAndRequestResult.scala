@@ -26,9 +26,10 @@ trait TransformRequestAndRequestResult[F[_], A] extends RequestInterceptor[F] {
         monad: MonadError[F]
       ): F[RequestResult[D]] = {
         for {
-          (a, transformedRequest) <- transformRequest(request)
-          response                <- requestHandler(noopEndpointInterceptor)(transformedRequest, endpoints)
-          transformedResponse     <- transformRequestResult(a, response)
+          transformationRes <- transformRequest(request)
+          (a, transformedRequest) = transformationRes
+          response            <- requestHandler(noopEndpointInterceptor)(transformedRequest, endpoints)
+          transformedResponse <- transformRequestResult(a, response)
         } yield transformedResponse
       }
     }
