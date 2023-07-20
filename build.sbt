@@ -13,11 +13,11 @@ val KindProjectorVersion = "0.13.2"
 val BetterMonadicForVersion = "0.3.1"
 val GitHub4sVersion = "0.29.1"
 
-ThisBuild / tlBaseVersion := "0.1"
-ThisBuild / organization := "io.github.spilne"
+ThisBuild / tlBaseVersion    := "0.1"
+ThisBuild / organization     := "io.github.spilne"
 ThisBuild / organizationName := "spilne"
-ThisBuild / startYear := Some(2023)
-ThisBuild / licenses := Seq(License.Apache2)
+ThisBuild / startYear        := Some(2023)
+ThisBuild / licenses         := Seq(License.Apache2)
 
 ThisBuild / developers ++= List(
   // your GitHub handle and name
@@ -26,7 +26,7 @@ ThisBuild / developers ++= List(
 
 val Scala3 = "3.3.0"
 ThisBuild / crossScalaVersions := Seq("2.13.11", Scala3)
-ThisBuild / scalaVersion := Scala3 // the default Scala
+ThisBuild / scalaVersion       := Scala3 // the default Scala
 
 lazy val root = tlCrossRootProject
   .aggregate(
