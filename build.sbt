@@ -34,7 +34,8 @@ lazy val root = tlCrossRootProject
     `redis4cats-contrib-core`,
     `tapir-contrib-server`,
     `tapir-contrib-log4cats`,
-    `fs2-contrib-batcher`
+    `fs2-contrib-batcher`,
+    `foldify`
   )
 
 lazy val `redis4cats-contrib-core` = {
@@ -90,6 +91,17 @@ lazy val `fs2-contrib-batcher` = {
     .settings(
       libraryDependencies ++= Seq(
         "co.fs2" %% "fs2-core" % "3.6.1"
+      )
+    )
+}
+
+lazy val `foldify` = {
+  project
+    .in(file("foldify"))
+    .configure(defaultProjectConfiguration)
+    .settings(
+      libraryDependencies ++= Seq(
+        "org.typelevel" %% "cats-core" % CatsVersion
       )
     )
 }
