@@ -13,7 +13,7 @@ val KindProjectorVersion = "0.13.2"
 val BetterMonadicForVersion = "0.3.1"
 val GitHub4sVersion = "0.29.1"
 
-ThisBuild / tlBaseVersion    := "0.1"
+ThisBuild / tlBaseVersion    := "0.2.0"
 ThisBuild / organization     := "io.github.spilne"
 ThisBuild / organizationName := "spilne"
 ThisBuild / startYear        := Some(2023)
