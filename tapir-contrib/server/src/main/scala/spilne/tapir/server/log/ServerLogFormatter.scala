@@ -25,7 +25,7 @@ import sttp.tapir.server.model.ServerResponse
 import java.time.Clock
 
 trait ServerLogFormatter[LogRecord, Token] {
-  def formatWhenReceived(req: ServerRequest): LogRecord
+  def formatWhenReceived(req: ServerRequest, token: Token): LogRecord
   def formatDecodeFailureNotHandled(ctx: DecodeFailureContext, token: Token): LogRecord
   def formatDecodeFailureHandled(ctx: DecodeFailureContext, resp: ServerResponse[_], token: Token): LogRecord
   def formatSecurityFailureHandled[F[_]](
@@ -47,7 +47,7 @@ trait StructuredLogFormatterL extends ServerLogFormatter[StructuredLogRecord, Lo
   protected def formatEndpoint(endpoint: AnyEndpoint): String = endpoint.showShort
   protected def formatResponse(resp: ServerResponse[_]): String = resp.showShort
 
-  override def formatWhenReceived(req: ServerRequest): StructuredLogRecord = {
+  override def formatWhenReceived(req: ServerRequest, token: Long): StructuredLogRecord = {
     StructuredLogRecord(s"Request received: ${req.showShort}")
   }
 

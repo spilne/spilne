@@ -30,9 +30,9 @@ abstract class StructuredLogRecordWithGenericCtx[T](underlying: ServerLogFormatt
     endpoint: Option[AnyEndpoint]
   ): Map[String, String]
 
-  override def formatWhenReceived(req: ServerRequest): StructuredLogRecord = {
+  override def formatWhenReceived(req: ServerRequest, token: T): StructuredLogRecord = {
     underlying
-      .formatWhenReceived(req)
+      .formatWhenReceived(req, token)
       .addContext(genericLogRecordContext(req, None))
   }
 

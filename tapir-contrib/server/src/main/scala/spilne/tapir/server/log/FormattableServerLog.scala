@@ -25,8 +25,8 @@ trait FormattableServerLog[F[_], LogRecord, Token] extends ServerLog[F] {
 
   override type TOKEN = Token
 
-  override def requestReceived(request: ServerRequest): F[Unit] =
-    writer.doLogWhenReceived(formatter.formatWhenReceived(request))
+  override def requestReceived(request: ServerRequest, token: Token): F[Unit] =
+    writer.doLogWhenReceived(formatter.formatWhenReceived(request, token))
 
   override def decodeFailureNotHandled(ctx: DecodeFailureContext, token: Token): F[Unit] =
     writer.doLogDecodeFailureNotHandled(formatter.formatDecodeFailureNotHandled(ctx, token))

@@ -33,8 +33,8 @@ abstract class SelfAwareServerLog[F[_]: MonadError, T](underlying: ServerLogAux[
   protected def logRequestHandled: Boolean
   protected def logException: Boolean
 
-  override def requestReceived(request: ServerRequest): F[Unit] =
-    MonadError[F].whenA(logWhenReceived)(underlying.requestReceived(request))
+  override def requestReceived(request: ServerRequest, token: TOKEN): F[Unit] =
+    MonadError[F].whenA(logWhenReceived)(underlying.requestReceived(request, token))
 
   override def decodeFailureNotHandled(ctx: DecodeFailureContext, token: TOKEN): F[Unit] =
     MonadError[F].whenA(logDecodeFailureNotHandled)(underlying.decodeFailureNotHandled(ctx, token))
