@@ -13,7 +13,7 @@ val KindProjectorVersion = "0.13.2"
 val BetterMonadicForVersion = "0.3.1"
 val GitHub4sVersion = "0.29.1"
 
-ThisBuild / tlBaseVersion    := "0.1"
+ThisBuild / tlBaseVersion    := "0.2"
 ThisBuild / organization     := "io.github.spilne"
 ThisBuild / organizationName := "spilne"
 ThisBuild / startYear        := Some(2023)
@@ -66,7 +66,7 @@ lazy val `tapir-contrib-server` = {
     .configure(tapirModule("server"))
     .settings(
       libraryDependencies ++= Seq(
-        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.2.1"
+        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.6.1"
       )
     )
 }
