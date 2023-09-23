@@ -89,7 +89,7 @@ lazy val `fs2-contrib-batcher` = {
     .configure(fs2Module("batcher"))
     .settings(
       libraryDependencies ++= Seq(
-        "co.fs2" %% "fs2-core" % "3.6.1"
+        "co.fs2" %% "fs2-core" % "3.9.2"
       )
     )
 }
