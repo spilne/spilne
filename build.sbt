@@ -78,7 +78,7 @@ lazy val `tapir-contrib-log4cats` = {
     .dependsOn(`tapir-contrib-server`)
     .settings(
       libraryDependencies ++= Seq(
-        "org.typelevel" %% "log4cats-core" % "2.5.0"
+        "org.typelevel" %% "log4cats-core" % "2.6.0"
       )
     )
 }
