@@ -5,7 +5,7 @@ addCommandAlias("ci", ";project root ;reload ;+scalafmtCheckAll ;+ci-jvm ;+packa
 
 // Dependencies
 val CatsVersion = "2.10.0"
-val CatsEffectVersion = "3.4.6"
+val CatsEffectVersion = "3.4.11"
 val ScalaTestVersion = "3.2.9"
 val ScalaTestPlusVersion = "3.2.9.0"
 val ScalaCheckVersion = "1.15.4"
@@ -25,7 +25,7 @@ ThisBuild / developers ++= List(
 )
 
 val Scala3 = "3.3.0"
-ThisBuild / crossScalaVersions     := Seq("2.13.11", Scala3)
+ThisBuild / crossScalaVersions     := Seq("2.13.12", Scala3)
 ThisBuild / scalaVersion           := Scala3 // the default Scala
 ThisBuild / tlCiDependencyGraphJob := false
 
@@ -45,7 +45,7 @@ lazy val `redis4cats-contrib-core` = {
       libraryDependencies ++= Seq(
         "org.typelevel" %% "cats-core"                 % CatsVersion,
         "org.typelevel" %% "cats-effect"               % CatsEffectVersion,
-        "dev.profunktor" %% "redis4cats-effects"       % "1.4.1",
+        "dev.profunktor" %% "redis4cats-effects"       % "1.4.3",
         "com.dimafeng" %% "testcontainers-scala-munit" % "0.40.11" % Test,
         "org.typelevel" %% "munit-cats-effect-3"       % "1.0.7"   % Test
       )
@@ -66,7 +66,7 @@ lazy val `tapir-contrib-server` = {
     .configure(tapirModule("server"))
     .settings(
       libraryDependencies ++= Seq(
-        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.6.1"
+        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.6.4"
       )
     )
 }
@@ -78,7 +78,7 @@ lazy val `tapir-contrib-log4cats` = {
     .dependsOn(`tapir-contrib-server`)
     .settings(
       libraryDependencies ++= Seq(
-        "org.typelevel" %% "log4cats-core" % "2.5.0"
+        "org.typelevel" %% "log4cats-core" % "2.6.0"
       )
     )
 }
@@ -89,7 +89,7 @@ lazy val `fs2-contrib-batcher` = {
     .configure(fs2Module("batcher"))
     .settings(
       libraryDependencies ++= Seq(
-        "co.fs2" %% "fs2-core" % "3.6.1"
+        "co.fs2" %% "fs2-core" % "3.9.2"
       )
     )
 }
