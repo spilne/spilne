@@ -5,7 +5,7 @@ addCommandAlias("ci", ";project root ;reload ;+scalafmtCheckAll ;+ci-jvm ;+packa
 
 // Dependencies
 val CatsVersion = "2.10.0"
-val CatsEffectVersion = "3.4.11"
+val CatsEffectVersion = "3.5.1"
 val ScalaTestVersion = "3.2.9"
 val ScalaTestPlusVersion = "3.2.9.0"
 val ScalaCheckVersion = "1.15.4"
