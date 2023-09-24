@@ -69,9 +69,8 @@ private[batcher] object BatchExecutor {
             batch.traverse_ { case (_, req) => req.complete(e.rightCast) }
 
           case Right(idToRes) =>
-            batch.traverse_ {
-              case (id, req) =>
-                req.complete(idToRes.get(id).toRight(notFoundError))
+            batch.traverse_ { case (id, req) =>
+              req.complete(idToRes.get(id).toRight(notFoundError))
             }
         }
     )

@@ -57,10 +57,9 @@ object ScriptBench {
       Redis[IO]
         .utf8("redis://localhost:6379")
         .allocated
-        .map {
-          case (c, cl) =>
-            client = c
-            closeClient = cl
+        .map { case (c, cl) =>
+          client = c
+          closeClient = cl
         }
         .unsafeRunSync()
 
