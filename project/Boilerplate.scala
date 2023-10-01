@@ -8,16 +8,14 @@ import scala.xml.Elem
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 object Boilerplate {
-  /**
-    * Applies [[filterOutDependencyFromGeneratedPomXml]] to a list of multiple dependencies.
+  /** Applies [[filterOutDependencyFromGeneratedPomXml]] to a list of multiple dependencies.
     */
   def filterOutMultipleDependenciesFromGeneratedPomXml(list: List[(String, Regex)]*) =
     list.foldLeft(List.empty[Def.Setting[_]]) { (acc, elem) =>
       acc ++ filterOutDependencyFromGeneratedPomXml(elem: _*)
     }
 
-  /**
-    * Filter out dependencies from the generated `pom.xml`.
+  /** Filter out dependencies from the generated `pom.xml`.
     *
     * E.g. to exclude Scoverage:
     * {{{
@@ -32,9 +30,8 @@ object Boilerplate {
   def filterOutDependencyFromGeneratedPomXml(conditions: (String, Regex)*) = {
     def shouldExclude(e: Elem) =
       e.label == "dependency" && {
-        conditions.forall {
-          case (key, regex) =>
-            e.child.exists(child => child.label == key && regex.findFirstIn(child.text).isDefined)
+        conditions.forall { case (key, regex) =>
+          e.child.exists(child => child.label == key && regex.findFirstIn(child.text).isDefined)
         }
       }
 
@@ -56,8 +53,7 @@ object Boilerplate {
     }
   }
 
-  /**
-    * For working with Scala version-specific source files, allowing us to
+  /** For working with Scala version-specific source files, allowing us to
     * use 2.12 or 2.13 specific APIs.
     */
   lazy val crossVersionSharedSources: Seq[Setting[_]] = {
@@ -90,8 +86,7 @@ object Boilerplate {
     }
   }
 
-  /**
-    * Skip publishing artifact for this project.
+  /** Skip publishing artifact for this project.
     */
   lazy val doNotPublishArtifact = Seq(
     publish / skip  := true,

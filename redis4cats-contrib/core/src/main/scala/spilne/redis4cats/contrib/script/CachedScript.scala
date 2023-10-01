@@ -63,16 +63,15 @@ object CachedScript {
             scriptTokenRef.get.flatMap { script =>
               val executeScript: F[A] = command(script.digest)
 
-              executeScript.recoverWith {
-                case _: RedisNoScriptException =>
-                  val reloadIfNeeded: F[Unit] = loadScriptMutex.permit.surround(
-                    for {
-                      shouldReload <- scriptTokenRef.get.map(_.token eq script.token)
-                      _            <- (loadScript >>= scriptTokenRef.set).whenA(shouldReload)
-                    } yield ()
-                  )
+              executeScript.recoverWith { case _: RedisNoScriptException =>
+                val reloadIfNeeded: F[Unit] = loadScriptMutex.permit.surround(
+                  for {
+                    shouldReload <- scriptTokenRef.get.map(_.token eq script.token)
+                    _            <- (loadScript >>= scriptTokenRef.set).whenA(shouldReload)
+                  } yield ()
+                )
 
-                  reloadIfNeeded >> executeScript
+                reloadIfNeeded >> executeScript
               }
             }
           }
