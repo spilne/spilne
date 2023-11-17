@@ -34,7 +34,8 @@ lazy val root = tlCrossRootProject
     `redis4cats-contrib-core`,
     `tapir-contrib-server`,
     `tapir-contrib-log4cats`,
-    `fs2-contrib-batcher`
+    `fs2-contrib-batcher`,
+    `phantom-id`
   )
 
 lazy val `redis4cats-contrib-core` = {
@@ -83,6 +84,14 @@ lazy val `tapir-contrib-log4cats` = {
     )
 }
 
+lazy val `phantom-id` = {
+  project
+    .configure(dobirneModule("phantom-id"))
+    .configure(defaultProjectConfiguration)
+}
+
+
+
 lazy val `fs2-contrib-batcher` = {
   crossProject(JVMPlatform)
     .crossType(CrossType.Pure)
@@ -104,3 +113,4 @@ def redis4catsModule(submoduleName: String): Project => Project = submodule("red
 def tapirModule(submoduleName: String): Project => Project = submodule("tapir-contrib", submoduleName)
 
 def fs2Module(submoduleName: String): Project => Project = submodule("fs2-contrib", submoduleName)
+def dobirneModule(submoduleName: String): Project => Project = submodule("dobirne", submoduleName)
