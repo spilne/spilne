@@ -5,7 +5,7 @@ addCommandAlias("ci", ";project root ;reload ;+scalafmtCheckAll ;+ci-jvm ;+packa
 
 // Dependencies
 val CatsVersion = "2.10.0"
-val CatsEffectVersion = "3.5.1"
+val CatsEffectVersion = "3.5.2"
 val ScalaTestVersion = "3.2.9"
 val ScalaTestPlusVersion = "3.2.9.0"
 val ScalaCheckVersion = "1.15.4"
@@ -45,7 +45,7 @@ lazy val `redis4cats-contrib-core` = {
       libraryDependencies ++= Seq(
         "org.typelevel" %% "cats-core"                 % CatsVersion,
         "org.typelevel" %% "cats-effect"               % CatsEffectVersion,
-        "dev.profunktor" %% "redis4cats-effects"       % "1.5.0",
+        "dev.profunktor" %% "redis4cats-effects"       % "1.5.2",
         "com.dimafeng" %% "testcontainers-scala-munit" % "0.40.11" % Test,
         "org.typelevel" %% "munit-cats-effect-3"       % "1.0.7"   % Test
       )
@@ -66,7 +66,7 @@ lazy val `tapir-contrib-server` = {
     .configure(tapirModule("server"))
     .settings(
       libraryDependencies ++= Seq(
-        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.7.4"
+        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.9.0"
       )
     )
 }
@@ -89,7 +89,7 @@ lazy val `fs2-contrib-batcher` = {
     .configure(fs2Module("batcher"))
     .settings(
       libraryDependencies ++= Seq(
-        "co.fs2" %% "fs2-core" % "3.9.2"
+        "co.fs2" %% "fs2-core" % "3.9.3"
       )
     )
 }
