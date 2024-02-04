@@ -66,7 +66,7 @@ lazy val `tapir-contrib-server` = {
     .configure(tapirModule("server"))
     .settings(
       libraryDependencies ++= Seq(
-        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.9.6"
+        "com.softwaremill.sttp.tapir" %% "tapir-server" % "1.9.9"
       )
     )
 }
