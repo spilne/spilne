@@ -25,7 +25,7 @@ ThisBuild / developers ++= List(
 )
 
 val Scala3 = "3.3.1"
-ThisBuild / crossScalaVersions     := Seq("2.13.12", Scala3)
+ThisBuild / crossScalaVersions     := Seq("2.13.13", Scala3)
 ThisBuild / scalaVersion           := Scala3 // the default Scala
 ThisBuild / tlCiDependencyGraphJob := false
 
