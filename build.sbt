@@ -24,7 +24,7 @@ ThisBuild / developers ++= List(
   tlGitHubDev("zakolenko", "Roman Zakolenko")
 )
 
-val Scala3 = "3.3.1"
+val Scala3 = "3.3.3"
 ThisBuild / crossScalaVersions     := Seq("2.13.12", Scala3)
 ThisBuild / scalaVersion           := Scala3 // the default Scala
 ThisBuild / tlCiDependencyGraphJob := false
