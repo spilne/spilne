@@ -9,7 +9,7 @@ val CatsEffectVersion = "3.5.2"
 val ScalaTestVersion = "3.2.9"
 val ScalaTestPlusVersion = "3.2.9.0"
 val ScalaCheckVersion = "1.15.4"
-val KindProjectorVersion = "0.13.2"
+val KindProjectorVersion = "0.13.3"
 val BetterMonadicForVersion = "0.3.1"
 val GitHub4sVersion = "0.29.1"
 
